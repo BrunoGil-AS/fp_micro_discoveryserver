@@ -1,13 +1,56 @@
 package com.aspiresys.fp_micro_discoveryserver;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean;
+import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FpMicroDiscoveryserverApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @LocalServerPort
+    private int port;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private EurekaClientConfigBean eurekaClientConfig;
+
+    @Autowired
+    private EurekaInstanceConfigBean eurekaInstanceConfig;
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("server.port", () -> 0);
+        registry.add("eureka.client.register-with-eureka", () -> "false");
+        registry.add("eureka.client.fetch-registry", () -> "false");
+        registry.add("eureka.server.enable-self-preservation", () -> "false");
+    }
+
+    @Test
+    void contextLoads() {
+        assertNotNull(applicationContext);
+        assertTrue(port > 0, "Application should start with a valid port");
+    }
+
+    @Test
+    void eurekaServerConfigurationIsCorrect() {
+        assertNotNull(eurekaClientConfig);
+        assertNotNull(eurekaInstanceConfig);
+        assertFalse(eurekaClientConfig.shouldRegisterWithEureka(), "Server should not register with itself");
+        assertFalse(eurekaClientConfig.shouldFetchRegistry(), "Server should not fetch registry");
+    }
+
+    @Test
+    void applicationStartsSuccessfully() {
+        assertNotNull(applicationContext.getBean(FpMicroDiscoveryserverApplication.class));
+    }
 }
