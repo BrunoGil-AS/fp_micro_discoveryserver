@@ -12,7 +12,8 @@ import org.springframework.test.context.DynamicPropertySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, 
+                properties = {"spring.profiles.active=test"})
 class FpMicroDiscoveryserverApplicationTests {
 
     @LocalServerPort
@@ -29,10 +30,8 @@ class FpMicroDiscoveryserverApplicationTests {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
-        registry.add("server.port", () -> 0);
-        registry.add("eureka.client.register-with-eureka", () -> "false");
-        registry.add("eureka.client.fetch-registry", () -> "false");
-        registry.add("eureka.server.enable-self-preservation", () -> "false");
+        // Override any remaining config that might not be set in application-test.properties
+        registry.add("spring.config.import", () -> "optional:configserver:");
     }
 
     @Test
