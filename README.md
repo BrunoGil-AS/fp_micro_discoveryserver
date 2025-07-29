@@ -27,9 +27,6 @@ This service is essential for the microservices architecture and must be the fir
   - [Eureka Console Access](#eureka-console-access)
   - [Service Monitoring](#service-monitoring)
   - [Instance Status](#instance-status)
-- [Production Considerations](#production-considerations)
-  - [High Availability Setup](#high-availability-setup)
-  - [Security Configuration](#security-configuration)
 
 ---
 
